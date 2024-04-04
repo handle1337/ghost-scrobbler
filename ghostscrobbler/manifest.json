@@ -1,0 +1,50 @@
+{
+	"manifest_version": 2,
+	"name": "ghost-scrobbler",
+	"description": "A lightweight scrobbler",
+	"version": "0.0.1",
+	"icons": {
+		"64": "icons/icon.png"
+	},
+	"background": {
+		"scripts": [
+			"background_script.js"
+		]
+	},
+	"content_scripts": [
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"js": [
+				"dist/content_script.js"
+			]
+		}
+	],
+	"browser_action": {
+		"default_icon": {
+			"64": "icons/icon.png"
+		},
+		"default_popup": "browserAction/index.html",
+		"default_title": "ghost-scrobbler"
+	},
+	"page_action": {
+		"default_icon": {
+			"64": "icons/icon.png"
+		},
+		"default_popup": "pageAction/index.html",
+		"default_title": "ghost-scrobbler"
+	},
+	"permissions": [
+		"activeTab",
+	    "contextMenus",
+		"storage",
+		"nativeMessaging",
+		"http://*/*",
+		"https://*/*",
+		"file://*/*"
+		],
+	"options_ui": {
+		"page": "options/index.html"
+	}
+}
