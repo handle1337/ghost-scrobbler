@@ -2,29 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="tabs.css" />
+    <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
-    <div class="panel">
-      <div class="panel-section panel-section-header">
-        <div class="text-section-header">Ghost-Scrobbler</div>
-      </div>
+    <h1>Ghost-Scrobbler</h1>
+    <div id="panel">
 
-      <a href="#" id="tabs-move-beginning">
-        yeah
-      </a>
-      <br />
+        <div id="text-section">
+          <p id="song-title"></p>
+          <p id="song-author">test</p>
+        </div>
 
-      <!-- Define the other menu items -->
-
-      <div class="switch-tabs">
-        <p>Switch to tab</p>
-        <div id="tabs-list"></div>
-      </div>
+        <div id="thumbnail-container"><img id="thumbnail-element" src=""></div>
     </div>
 
-    <img id="thumbnail" src="">
+    
 
     <script src="browser_action_script.js"></script>
   </body>

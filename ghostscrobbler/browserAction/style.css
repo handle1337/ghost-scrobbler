@@ -1,7 +1,28 @@
 h1 {
-  font-style: italic;
+  font-style: bold;
+  text-align: center;
 }
 body {
   width: 400;
   height: 200;
+}
+
+#panel {
+  border: 1px solid black;
+  overflow:auto;
+}
+
+#thumbnail-container {
+  width: 128px;
+  height: auto;
+  float:left;
+}
+
+#thumbnail-element {
+  width: 100%;
+  height: auto;
+}
+
+#text-section {
+  float: right;
 }

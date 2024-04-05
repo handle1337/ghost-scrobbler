@@ -74,7 +74,7 @@ var song = {
     title: '',
     author: '',
     url: '',
-    thumbnail_url: ''
+    thumbnail_url: '',
 };
 function setSong() {
     return __awaiter(this, void 0, void 0, function () {
@@ -92,7 +92,8 @@ function setSong() {
                         axios_1.default.get(yt_oumbed_url + '?format=json&url=' + tab_url.toString()).then(function (response) {
                             console.log(response);
                             song.title = response.data.title;
-                            song.author = response.data.author;
+                            song.author = response.data.author_name;
+                            console.log(response.data.author_name);
                             song.url = tab_url.toString();
                             song.thumbnail_url = response.data.thumbnail_url;
                         }).then(function () { console.log("done"); });
@@ -104,8 +105,8 @@ function setSong() {
 }
 function handleMessage(request, sender, sendResponse) {
     console.log("A content script sent a message: ".concat(request));
-    sendResponse({ response: JSON.stringify(song) });
+    sendResponse({ response: song });
 }
 browser.runtime.onMessage.addListener(handleMessage);
 browser.tabs.onActivated.addListener(setSong);
-//browser.tabs.onUpdated.addListener(isTabYoutube);
+browser.tabs.onUpdated.addListener(setSong);

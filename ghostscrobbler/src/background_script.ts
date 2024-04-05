@@ -42,7 +42,8 @@ async function setSong() {
         axios.get(yt_oumbed_url + '?format=json&url=' + tab_url.toString()).then(function (response: any) {
             console.log(response);
             song.title = response.data.title;
-            song.author = response.data.author;
+            song.author = response.data.author_name;
+            console.log(response.data.author_name);
             song.url = tab_url.toString();
             song.thumbnail_url = response.data.thumbnail_url;
             
@@ -53,10 +54,10 @@ async function setSong() {
 
 function handleMessage(request: any, sender: any, sendResponse: any) {
     console.log(`A content script sent a message: ${request}`);
-    sendResponse({ response: JSON.stringify(song) });
+    sendResponse({ response: song });
 }
   
 browser.runtime.onMessage.addListener(handleMessage);
 
 browser.tabs.onActivated.addListener(setSong);
-//browser.tabs.onUpdated.addListener(isTabYoutube);
+browser.tabs.onUpdated.addListener(setSong);
