@@ -12,7 +12,8 @@ module.exports = {
   entry: {
     background_script: {import: './src/background_script.js', filename: '../[name].js'},
     api_handler: {import: './src/api_handler.js', filename: '../[name].js'},
-    browser_action_script: {import: './src/browserAction/script.js', filename: '../browserAction/[name].js'}
+    browser_action_script: {import: './src/browserAction/script.js', filename: '../browserAction/[name].js'},
+    options_script: {import: './src/options/script.js', filename: '../options/[name].js'},
   },
   //mode: 'development',
 };

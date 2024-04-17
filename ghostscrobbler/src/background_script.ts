@@ -3,10 +3,7 @@ import axios from 'axios';
 
 
 const yt_oumbed_url: string = "https://www.youtube.com/oembed";
-
-
-//TODO: https://www.last.fm/api/desktopauth tHISISIS
-
+var auth_token: string = "";
 
 async function getTabs(): Promise<browser.tabs.Tab[]> {
     return await browser.tabs.query({ currentWindow: true, active: true });
@@ -26,18 +23,19 @@ async function isTabYoutube(url: URL): Promise<boolean> {
 }
 
 async function handleTab() {
-    var localhost = "127.0.0.1"
+    //TODO: clean this mess up
+    api_handler.fetchToken().then((token: string) => {auth_token = token});
+
     var tab_url = new URL(await getActiveTabURL());
 
-    if (tab_url.host === localhost) {
-        let token_regex: RegExpMatchArray | null = tab_url.toString().match((/token=([^&]+)/));
-        if (token_regex && token_regex[1]) {
-            
-            let auth_token = token_regex[1]; //we can infer this is populated
-            let fetched_session_key = await api_handler.fetchSession(auth_token);
-            console.log(`session ${fetched_session_key}`);
-            await browser.storage.local.set({session: fetched_session_key}).then(() => {console.log("saved session key")});
-        }
+    let session_exists: boolean = await api_handler.checkSession();
+
+    
+
+    if (!session_exists) {
+        let token: string = await api_handler.fetchToken();
+        let fetched_session_key = await api_handler.fetchSession(token);
+        await browser.storage.local.set({session: fetched_session_key}).then(() => {console.log("saved session key")});
     }
 
     if (await isTabYoutube(tab_url)) {
@@ -53,12 +51,16 @@ async function handleTab() {
     }
 }
 
+
 function handleMessage(request: any, sender: any, sendResponse: any) {
-    console.log(`A content script sent a message: ${request}`);
-    /*if (request.page === "options") {
-        sendResponse({ response: fetchSession(request.data) })
-    }*/
-    sendResponse({ response: api_handler.song });
+    console.log(`A content script sent a message: ${request.data}`);
+    if (request.page === "options") {
+        console.log(`fetched: ${auth_token}`);
+        sendResponse({ response: { token: auth_token } });
+    }
+    if (request.page = "browser-action") {
+        sendResponse({ response: api_handler.song });
+    }
 }
   
 

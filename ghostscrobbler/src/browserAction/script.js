@@ -4,11 +4,12 @@ function handleResponse(message) {
 }
 
 function handleError(error) {
-  console.log(`Error: ${error}`);
+  console.log(`${error}`);
 }
 
 function notifyBackgroundPage(e) {
   const sending = browser.runtime.sendMessage({
+    page: "borwser-action",
     data: "Msg from browser action",
   });
   sending.then(handleResponse, handleError);

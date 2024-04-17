@@ -38,7 +38,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const api_handler = __importStar(require("./api_handler"));
 const axios_1 = __importDefault(require("axios"));
 const yt_oumbed_url = "https://www.youtube.com/oembed";
-//TODO: https://www.last.fm/api/desktopauth tHISISIS
+var auth_token = "";
 function getTabs() {
     return __awaiter(this, void 0, void 0, function* () {
         return yield browser.tabs.query({ currentWindow: true, active: true });
@@ -59,16 +59,14 @@ function isTabYoutube(url) {
 }
 function handleTab() {
     return __awaiter(this, void 0, void 0, function* () {
-        var localhost = "127.0.0.1";
+        api_handler.fetchToken().then((token) => { auth_token = token; });
         var tab_url = new URL(yield getActiveTabURL());
-        if (tab_url.host === localhost) {
-            let token_regex = tab_url.toString().match((/token=([^&]+)/));
-            if (token_regex && token_regex[1]) {
-                let auth_token = token_regex[1]; //we can infer this is populated
-                let fetched_session_key = yield api_handler.fetchSession(auth_token);
-                console.log(`session ${fetched_session_key}`);
-                yield browser.storage.local.set({ session: fetched_session_key }).then(() => { console.log("saved session key"); });
-            }
+        let session_exists = yield api_handler.checkSession();
+        //TODO: check if the user has authorized the app
+        if (!session_exists) {
+            let token = yield api_handler.fetchToken();
+            let fetched_session_key = yield api_handler.fetchSession(token);
+            yield browser.storage.local.set({ session: fetched_session_key }).then(() => { console.log("saved session key"); });
         }
         if (yield isTabYoutube(tab_url)) {
             // TODO: use qs here as well
@@ -83,13 +81,16 @@ function handleTab() {
     });
 }
 function handleMessage(request, sender, sendResponse) {
-    console.log(`A content script sent a message: ${request}`);
-    /*if (request.page === "options") {
-        sendResponse({ response: fetchSession(request.data) })
-    }*/
-    sendResponse({ response: api_handler.song });
+    console.log(`A content script sent a message: ${request.data}`);
+    if (request.page === "options") {
+        console.log(`fetched: ${auth_token}`);
+        sendResponse({ response: { token: auth_token } });
+    }
+    if (request.page = "browser-action") {
+        sendResponse({ response: api_handler.song });
+    }
 }
 browser.runtime.onMessage.addListener(handleMessage);
 //browser.runtime.onStartup.addListener(Auth);
-//browser.tabs.onActivated.addListener(handleTab);
+browser.tabs.onActivated.addListener(handleTab);
 browser.tabs.onUpdated.addListener(handleTab);
