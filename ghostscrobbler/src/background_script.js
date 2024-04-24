@@ -39,6 +39,7 @@ const api_handler = __importStar(require("./api_handler"));
 const axios_1 = __importDefault(require("axios"));
 const yt_oumbed_url = "https://www.youtube.com/oembed";
 var auth_token = "";
+var session_exists;
 function getTabs() {
     return __awaiter(this, void 0, void 0, function* () {
         return yield browser.tabs.query({ currentWindow: true, active: true });
@@ -53,44 +54,67 @@ function getActiveTabURL() {
 }
 function isTabYoutube(url) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(`${url.host} ${url.pathname} ${url.searchParams}`);
+        // console.log(`${url.host} ${url.pathname} ${url.searchParams}`)
         return url.toString().includes("youtube.com/watch?v=");
+    });
+}
+function checkSession() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return browser.storage.local.get('session').then(data => {
+            console.log(data.session);
+            return !!data.session;
+        });
+    });
+}
+function checkToken() {
+    return __awaiter(this, void 0, void 0, function* () {
+        api_handler.fetchToken().then((token) => { auth_token = token; });
     });
 }
 function handleTab() {
     return __awaiter(this, void 0, void 0, function* () {
-        api_handler.fetchToken().then((token) => { auth_token = token; });
+        //TODO: clean this mess up
         var tab_url = new URL(yield getActiveTabURL());
-        let session_exists = yield api_handler.checkSession();
-        //TODO: check if the user has authorized the app
-        if (!session_exists) {
-            let token = yield api_handler.fetchToken();
-            let fetched_session_key = yield api_handler.fetchSession(token);
-            yield browser.storage.local.set({ session: fetched_session_key }).then(() => { console.log("saved session key"); });
-        }
+        session_exists = yield checkSession();
         if (yield isTabYoutube(tab_url)) {
+            if (!session_exists && auth_token) {
+                let session_key = yield api_handler.fetchSession(auth_token);
+                yield browser.storage.local.set({ session: session_key }).then(() => { console.log("saved session key"); });
+            }
             // TODO: use qs here as well
-            axios_1.default.get(yt_oumbed_url + '?format=json&url=' + tab_url.toString()).then(function (response) {
-                console.log(response);
-                api_handler.song.title = response.data.title;
-                api_handler.song.author = response.data.author_name;
-                api_handler.song.url = tab_url.toString();
-                api_handler.song.thumbnail_url = response.data.thumbnail_url;
-            }).then(api_handler.updateNowPlaying);
+            try {
+                axios_1.default.get(yt_oumbed_url + '?format=json&url=' + tab_url.toString()).then(function (response) {
+                    console.log(response);
+                    api_handler.song.title = response.data.title;
+                    api_handler.song.author = response.data.author_name;
+                    api_handler.song.url = tab_url.toString();
+                    api_handler.song.thumbnail_url = response.data.thumbnail_url;
+                });
+            }
+            catch (error) {
+                console.log(error);
+            }
+            api_handler.updateNowPlaying();
         }
     });
 }
 function handleMessage(request, sender, sendResponse) {
+    var _a;
     console.log(`A content script sent a message: ${request.data}`);
     if (request.page === "options") {
+        auth_token = (_a = request.data) !== null && _a !== void 0 ? _a : null;
         console.log(`fetched: ${auth_token}`);
-        sendResponse({ response: { token: auth_token } });
+        if (auth_token) {
+            sendResponse({ response: { token: auth_token } });
+        }
     }
-    if (request.page = "browser-action") {
-        sendResponse({ response: api_handler.song });
+    if (request.page === "browser-action") {
+        console.log(api_handler.song);
+        sendResponse({ response: { song: api_handler.song, auth: session_exists } });
     }
 }
 browser.runtime.onMessage.addListener(handleMessage);
 //browser.runtime.onStartup.addListener(Auth);
+browser.runtime.onStartup.addListener(checkToken);
 browser.tabs.onActivated.addListener(handleTab);
 browser.tabs.onUpdated.addListener(handleTab);
