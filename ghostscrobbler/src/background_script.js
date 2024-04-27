@@ -66,16 +66,19 @@ function checkSession() {
         });
     });
 }
-function checkToken() {
-    return __awaiter(this, void 0, void 0, function* () {
-        api_handler.fetchToken().then((token) => { auth_token = token; });
-    });
+/**
+async function checkToken() {
+        api_handler.fetchToken().then((token: string) => {auth_token = token});
+}**/
+function isScrobble(duration, timestamp) {
+    return ((timestamp > 400 || timestamp > (duration / 2)) && duration > 30);
 }
 function handleTab() {
     return __awaiter(this, void 0, void 0, function* () {
-        //TODO: clean this mess up
+        //if we make this global we might fix the problem with multiple execs
         var tab_url = new URL(yield getActiveTabURL());
         session_exists = yield checkSession();
+        //check if active tab is youtube
         if (yield isTabYoutube(tab_url)) {
             if (!session_exists && auth_token) {
                 let session_key = yield api_handler.fetchSession(auth_token);
@@ -94,13 +97,30 @@ function handleTab() {
             catch (error) {
                 console.log(error);
             }
-            api_handler.updateNowPlaying();
+            yield api_handler.updateNowPlaying();
         }
     });
 }
 function handleMessage(request, sender, sendResponse) {
     var _a;
-    console.log(`A content script sent a message: ${request.data}`);
+    console.log(`A content script sent a message: ${request}`);
+    if (request.page === "content-script") {
+        console.log("test");
+        console.log(request);
+        let track_timestamp = request.timestamp; // the current time elapsed in playback
+        let track_duration = request.timestamp;
+        if (isScrobble(track_duration, track_timestamp)) {
+            (() => __awaiter(this, void 0, void 0, function* () {
+                let session_exists = yield checkSession();
+                if (session_exists) {
+                    yield api_handler.scrobble(track_duration).then(sendResponse({ response: { scrobbled: true } }));
+                }
+            }))();
+        }
+        else {
+            sendResponse({ response: { scrobbled: false } }); //this deals with replays
+        }
+    }
     if (request.page === "options") {
         auth_token = (_a = request.data) !== null && _a !== void 0 ? _a : null;
         console.log(`fetched: ${auth_token}`);
@@ -112,9 +132,8 @@ function handleMessage(request, sender, sendResponse) {
         console.log(api_handler.song);
         sendResponse({ response: { song: api_handler.song, auth: session_exists } });
     }
+    return true; //we do this to avoid prepending async to the func
 }
 browser.runtime.onMessage.addListener(handleMessage);
-//browser.runtime.onStartup.addListener(Auth);
-browser.runtime.onStartup.addListener(checkToken);
-browser.tabs.onActivated.addListener(handleTab);
+//browser.tabs.onActivated.addListener(handleTab);
 browser.tabs.onUpdated.addListener(handleTab);

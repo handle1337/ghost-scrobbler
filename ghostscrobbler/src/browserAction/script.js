@@ -11,7 +11,7 @@ function handleResponse(message) {
 }
 
 function handleError(error) {
-  console.log(`${error}`);
+  console.log(error);
 }
 
 function notifyBackgroundPage(e) {
