@@ -105,14 +105,13 @@ function handleMessage(request, sender, sendResponse) {
     var _a;
     console.log(`A content script sent a message: ${request}`);
     if (request.page === "content-script") {
-        console.log("test");
-        console.log(request);
         let track_timestamp = request.timestamp; // the current time elapsed in playback
-        let track_duration = request.timestamp;
+        let track_duration = request.duration;
         if (isScrobble(track_duration, track_timestamp)) {
             (() => __awaiter(this, void 0, void 0, function* () {
                 let session_exists = yield checkSession();
                 if (session_exists) {
+                    console.log(`scrobbling`);
                     yield api_handler.scrobble(track_duration).then(sendResponse({ response: { scrobbled: true } }));
                 }
             }))();

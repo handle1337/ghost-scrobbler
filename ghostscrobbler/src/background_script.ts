@@ -74,10 +74,8 @@ async function handleTab() {
 function handleMessage(request: any, sender: any, sendResponse: any) {
     console.log(`A content script sent a message: ${request}`);
     if (request.page === "content-script") {
-        console.log("test");
-        console.log(request);
         let track_timestamp = request.timestamp; // the current time elapsed in playback
-        let track_duration = request.timestamp;
+        let track_duration = request.duration;
         
         if (isScrobble(track_duration, track_timestamp)) {
             (async () => {
