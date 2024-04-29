@@ -15,13 +15,14 @@ const AXIOS_OPTIONS: AxiosRequestConfig = {
 };
 
 
-interface ISong {
+export interface ISong {
     title: string;
     author: string
     url: string;
     thumbnail_url: string;
     timestamp?: number;
     scrobbled?: boolean;
+    loved?: boolean;
 }
 
 export let song: ISong = {
@@ -156,6 +157,59 @@ export async function updateNowPlaying(): Promise<void> {
             console.log(error)
         });
 }
+
+
+export async function loveOrUnloveTrack(service_method: string, _song: ISong): Promise<void> {
+    
+    var session_key: string;
+
+    browser.storage.local.get('session').then(
+        function (result): any {
+            session_key = result.session;
+
+            if (!session_key) 
+            { 
+                console.warn("last.fm not connected");
+                return; 
+            }
+
+            let params: IParams = {
+                method: service_method,
+                artist: _song.author,
+                track: _song.title,
+                api_key: API_KEY,
+                sk: session_key,
+            }
+
+            const signature: string = getMethodSignature(params, API_SECRET); 
+            params.api_sig = signature;
+
+            console.log(params);
+
+            try {
+                axios.post(SCROBBLER_URL, stringify(params), AXIOS_OPTIONS)
+                .then((response: any) => {console.log(response)}); 
+            } catch(error) {
+                console.log("Failed to communicate with last.fm")
+                throw error;
+            }
+        }).catch(function (error) {
+            console.log(`Failed with ${error}`)
+        });
+}
+
+
+export async function loveTrack(_song: ISong): Promise<void> {
+    const service_method: string = "track.love"
+    await loveOrUnloveTrack(service_method, _song);
+}
+
+export async function unloveTrack(_song: ISong): Promise<void> {
+    const service_method: string = "track.unlove"
+    await loveOrUnloveTrack(service_method, _song);
+}
+
+
 
 export async function scrobble(duration?: number): Promise<void> {
 

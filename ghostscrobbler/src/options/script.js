@@ -14,13 +14,13 @@ function handleResponse(message) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(`Message from the background script: ${message.response.token}`);
         let token = message.response.token;
-        const authUrlElement = document.getElementById("auth-url");
-        if (authUrlElement) {
+        const auth_url_element = document.getElementById("auth-url");
+        if (auth_url_element) {
             if (token) {
-                authUrlElement.href = `http://www.last.fm/api/auth/?api_key=${api_handler_1.API_KEY}&token=${token}`;
+                auth_url_element.href = `http://www.last.fm/api/auth/?api_key=${api_handler_1.API_KEY}&token=${token}`;
             }
             else {
-                authUrlElement.textContent = "No token found";
+                auth_url_element.textContent = "No token found";
             }
         }
     });

@@ -30,10 +30,6 @@ async function checkSession(): Promise<boolean> {
     });
 }
 
-/** 
-async function checkToken() {
-        api_handler.fetchToken().then((token: string) => {auth_token = token});
-}**/
 
 function isScrobble(duration: number, timestamp: number): boolean {
     return ((timestamp > 400 || timestamp > (duration / 2)) && duration > 30);

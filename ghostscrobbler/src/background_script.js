@@ -66,10 +66,6 @@ function checkSession() {
         });
     });
 }
-/**
-async function checkToken() {
-        api_handler.fetchToken().then((token: string) => {auth_token = token});
-}**/
 function isScrobble(duration, timestamp) {
     return ((timestamp > 400 || timestamp > (duration / 2)) && duration > 30);
 }
@@ -111,7 +107,6 @@ function handleMessage(request, sender, sendResponse) {
             (() => __awaiter(this, void 0, void 0, function* () {
                 let session_exists = yield checkSession();
                 if (session_exists) {
-                    console.log(`scrobbling`);
                     yield api_handler.scrobble(track_duration).then(sendResponse({ response: { scrobbled: true } }));
                 }
             }))();

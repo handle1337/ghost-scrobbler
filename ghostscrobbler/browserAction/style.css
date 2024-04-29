@@ -1,10 +1,11 @@
 h1 {
+  font-size: medium;
   font-style: bold;
   text-align: center;
 }
 body {
-  width: 400;
-  height: 200;
+  width: 400px;
+  height: 200px;
 }
 
 #panel {
@@ -13,7 +14,8 @@ body {
 }
 
 #thumbnail-container {
-  width: 128px;
+  border: 1px solid black;
+  width: 28%;
   height: auto;
   float:left;
 }
@@ -24,5 +26,28 @@ body {
 }
 
 #text-section {
+  border: 1px solid black;
+  width: 70%;
   float: right;
+  text-align: left;
 }
+
+#btn-container {
+  border: 1px solid black;
+  width: auto;
+  height: auto;
+  display: block;
+  bottom: 0;
+  clear: both;
+  overflow:auto;
+}
+
+#btn-love-track {
+  width: 12%;
+  height: auto;
+  display: inline;
+  float: left;
+}
+
+.greyed-out { filter: grayscale(100%); }
+

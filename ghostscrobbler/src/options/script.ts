@@ -3,12 +3,12 @@ import { fetchToken, API_KEY } from '../api_handler'
 async function handleResponse(message: any) {
   console.log(`Message from the background script: ${message.response.token}`);
   let token: string = message.response.token;
-  const authUrlElement = document.getElementById("auth-url") as HTMLAnchorElement;
-  if (authUrlElement) {
+  const auth_url_element = document.getElementById("auth-url") as HTMLAnchorElement;
+  if (auth_url_element) {
     if (token) {
-      authUrlElement.href = `http://www.last.fm/api/auth/?api_key=${API_KEY}&token=${token}`;
+      auth_url_element.href = `http://www.last.fm/api/auth/?api_key=${API_KEY}&token=${token}`;
     } else {
-      authUrlElement.textContent = "No token found";
+      auth_url_element.textContent = "No token found";
     }
   }
 }

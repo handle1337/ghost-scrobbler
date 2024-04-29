@@ -12,14 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.scrobble = exports.updateNowPlaying = exports.getTimestamp = exports.fetchSession = exports.fetchToken = exports.song = exports.API_KEY = void 0;
+exports.scrobble = exports.unloveTrack = exports.loveTrack = exports.loveOrUnloveTrack = exports.updateNowPlaying = exports.getTimestamp = exports.fetchSession = exports.fetchToken = exports.song = exports.API_KEY = void 0;
 const axios_1 = __importDefault(require("axios"));
 const qs_1 = require("qs");
 const crypto_js_1 = require("crypto-js");
 const xml2js_1 = require("xml2js");
 const SCROBBLER_URL = "http://ws.audioscrobbler.com/2.0/";
-exports.API_KEY = "1e6a459987c034f59dc5788315bedafe";
-const API_SECRET = "9a2288e9eeecbdee511de18c16d36d94";
+exports.API_KEY = "";
+const API_SECRET = "";
 const AXIOS_OPTIONS = {
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
 };
@@ -137,6 +137,53 @@ function updateNowPlaying() {
     });
 }
 exports.updateNowPlaying = updateNowPlaying;
+function loveOrUnloveTrack(service_method, _song) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var session_key;
+        browser.storage.local.get('session').then(function (result) {
+            session_key = result.session;
+            if (!session_key) {
+                console.warn("last.fm not connected");
+                return;
+            }
+            let params = {
+                method: service_method,
+                artist: _song.author,
+                track: _song.title,
+                api_key: exports.API_KEY,
+                sk: session_key,
+            };
+            const signature = getMethodSignature(params, API_SECRET);
+            params.api_sig = signature;
+            console.log(params);
+            try {
+                axios_1.default.post(SCROBBLER_URL, (0, qs_1.stringify)(params), AXIOS_OPTIONS)
+                    .then((response) => { console.log(response); });
+            }
+            catch (error) {
+                console.log("Failed to communicate with last.fm");
+                throw error;
+            }
+        }).catch(function (error) {
+            console.log(`Failed with ${error}`);
+        });
+    });
+}
+exports.loveOrUnloveTrack = loveOrUnloveTrack;
+function loveTrack(_song) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const service_method = "track.love";
+        yield loveOrUnloveTrack(service_method, _song);
+    });
+}
+exports.loveTrack = loveTrack;
+function unloveTrack(_song) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const service_method = "track.unlove";
+        yield loveOrUnloveTrack(service_method, _song);
+    });
+}
+exports.unloveTrack = unloveTrack;
 function scrobble(duration) {
     return __awaiter(this, void 0, void 0, function* () {
         const service_method = "track.scrobble";
