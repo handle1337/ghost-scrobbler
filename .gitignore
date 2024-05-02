@@ -1,0 +1,5 @@
+ghostscrobbler/**/*.js
+ghostscrobbler/*.js
+ghostscrobbler/**/*.LICENSE.txt
+ghostscrobbler/*.LICENSE.txt
+!ghostscrobbler/webpack.config.js

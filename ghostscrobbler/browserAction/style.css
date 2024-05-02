@@ -5,7 +5,11 @@ h1 {
 }
 body {
   width: 400px;
-  height: 200px;
+  height: auto;
+}
+
+p {
+  margin: 0;
 }
 
 #panel {
@@ -26,8 +30,8 @@ body {
 }
 
 #text-section {
-  border: 1px solid black;
   width: 70%;
+  flex: 1;
   float: right;
   text-align: left;
 }
@@ -43,7 +47,7 @@ body {
 }
 
 #btn-love-track {
-  width: 12%;
+  width: 10%;
   height: auto;
   display: inline;
   float: left;
