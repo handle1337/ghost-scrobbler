@@ -19,7 +19,7 @@ p {
 
 #panel {
   border: 1px solid black;
-  border-radius: 12%;
+  border-radius: 12px;
   background-color: rgb(10, 9, 9);
   width: 100%;
   height: auto;
