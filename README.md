@@ -11,7 +11,7 @@ A simple scrobbler extension for firefox aimed at youtube/youtube music users!
 
 ## Building
 
-### Requierements
+### Requirements
 - npm
 - yarn
 - webpack
