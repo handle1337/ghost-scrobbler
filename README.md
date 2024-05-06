@@ -8,6 +8,28 @@ A simple scrobbler extension for firefox aimed at youtube/youtube music users!
 
 ![screenshot](./media/screenshot.png)
 
+
+## Building
+
+### Requierements
+- npm
+- yarn
+- webpack
+- web-ext
+- typescript
+
+### Steps
+On your terminal run the following under `/ghostscrobbler/`
+1. `$ npx tsc`
+2. `$ npx webpack --config webpack.config.js `
+
+#### Testing the extension
+`web-ext run --devtools`
+
+#### Building it
+
+`web-ext build`
+
 ## Roadmap
 
 - [x] Implement auth process
@@ -15,4 +37,4 @@ A simple scrobbler extension for firefox aimed at youtube/youtube music users!
 - [x] Add love/unlove functionality
 - [ ] Implement discord rich presence
 - [ ] Implement track correction
-- [ ] Improve GUI
+- [x] Improve GUI

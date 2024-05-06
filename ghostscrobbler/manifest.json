@@ -6,6 +6,9 @@
 	"icons": {
 		"64": "icons/icon.png"
 	},
+	"gecko": {
+		"id": "ghostscrobbler@xsync3d.com"
+	},
 	"background": {
 		"scripts": [
 			"background_script.js"

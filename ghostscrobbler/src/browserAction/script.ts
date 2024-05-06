@@ -6,6 +6,8 @@ function handleResponse(message: any) {
   const song: ISong = message.response.song;
 
   const thumbnail_element = document.getElementById("thumbnail-element") as HTMLImageElement;
+
+
   const song_title_element = document.getElementById("song-title") as HTMLParagraphElement;
   const song_author_element = document.getElementById("song-author") as HTMLParagraphElement;
   const btn_love_element = document.getElementById('btn-love-track') as HTMLInputElement;
@@ -22,7 +24,7 @@ function handleResponse(message: any) {
   const auth_element = document.getElementById("auth") as HTMLParagraphElement;
 
   if (message.response.auth && auth_element) {
-    auth_element.textContent = "Last.fm is Authenticated";
+    auth_element.remove();
 
     btn_love_element.addEventListener('click', function() {
       this.classList.toggle('greyed-out'); 
