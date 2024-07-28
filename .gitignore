@@ -5,4 +5,6 @@ ghostscrobbler/*.LICENSE.txt
 
 ghostscrobbler/web-ext-artifacts
 
+node_modules/
+
 !ghostscrobbler/webpack.config.js
